@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const app = express();
@@ -17,10 +18,20 @@ app.get("/", (req, res) => {
 app.get("/weather", async (req, res) => {
   // Get the city from the query parameters
   const city = req.query.city;
-  const apiKey = "7ae3f2fb9b6746ba1e01028e6b5f2096";
+  const apiKey = process.env.WEATHER_API_KEY;
 
   // Add your logic here to fetch weather data from the API
-  const APIUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
+  const APIUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+  let weather;
+  let error = null;
+  try {
+    const response = await axios.get(APIUrl);
+    // console.log(response);
+    weather = response.data;
+  } catch (error) {
+    weather = null;
+    error = "Error, Please try again";
+  }
   
   // Render the index template with the weather data and error message
   res.render("index", { weather, error });
